@@ -1,4 +1,4 @@
-# Usa la imagen oficial de SDK de .NET 9 para compilar
+# 1. Etapa de Compilación
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /app
 
@@ -10,13 +10,23 @@ RUN dotnet restore
 COPY . ./
 RUN dotnet publish -c Release -o out
 
-# Usa la imagen de tiempo de ejecución (más pequeña)
+# 2. Etapa de Ejecución
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
+
+# --- NUEVA SECCIÓN: Instalar Java para PlantUML ---
+RUN apt-get update && apt-get install -y openjdk-17-jre-headless && rm -rf /var/lib/apt/lists/*
+
+# Copia los binarios compilados
 COPY --from=build /app/out .
 
-# Exponer el puerto que usa la API
-EXPOSE 80
-EXPOSE 443
+# Copia las herramientas (PlantUML)
+COPY Tools ./Tools
+
+# --- NUEVA SECCIÓN: Crear carpetas de trabajo para el Agente ---
+RUN mkdir -p /app/Inputs /app/Outputs && chmod -R 777 /app/Inputs /app/Outputs
+
+# Exponer el puerto
+EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "Koncilia.HistoriaUsuario.Api.dll"]

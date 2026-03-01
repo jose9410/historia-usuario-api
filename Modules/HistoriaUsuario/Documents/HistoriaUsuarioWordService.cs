@@ -273,7 +273,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
 
             // Cargar la imagen desde el recurso embebido
             var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "Automatizacion.AgentesKoncilia.Assets.koncilia_header.png";
+            string resourceName = "Koncilia.HistoriaUsuario.Api.Assets.koncilia_header.png";
             using (Stream? resourceStream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
@@ -385,7 +385,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
 
             // Cargar la imagen desde el recurso embebido
             var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "Automatizacion.AgentesKoncilia.Assets.koncilia_footer.png";
+            string resourceName = "Koncilia.HistoriaUsuario.Api.Assets.koncilia_footer.png";
             using (Stream? resourceStream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
