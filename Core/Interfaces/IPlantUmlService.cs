@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Automatizacion.AgentesKoncilia.Core.Interfaces
+namespace Automatizacion.Agentes.Core.Interfaces
 {
     public interface IPlantUmlService
     {

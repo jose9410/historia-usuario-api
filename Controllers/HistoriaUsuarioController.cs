@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario;
+using Automatizacion.Agentes.Modules.HistoriaUsuario;
 
 [ApiController]
 [Route("api/[controller]")]

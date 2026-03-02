@@ -1,11 +1,11 @@
-using Automatizacion.AgentesKoncilia.Core.Interfaces;
+using Automatizacion.Agentes.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace Automatizacion.AgentesKoncilia.Infrastructure.Diagrams
+namespace Automatizacion.Agentes.Infrastructure.Diagrams
 {
     public class PlantUmlService : IPlantUmlService
     {

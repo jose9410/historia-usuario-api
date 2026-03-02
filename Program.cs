@@ -1,9 +1,9 @@
-using Automatizacion.AgentesKoncilia.Core.Interfaces;
-using Automatizacion.AgentesKoncilia.Infrastructure.AI;
-using Automatizacion.AgentesKoncilia.Infrastructure.Diagrams;
-using Automatizacion.AgentesKoncilia.Infrastructure.Transcription;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents;
+using Automatizacion.Agentes.Core.Interfaces;
+using Automatizacion.Agentes.Infrastructure.AI;
+using Automatizacion.Agentes.Infrastructure.Diagrams;
+using Automatizacion.Agentes.Infrastructure.Transcription;
+using Automatizacion.Agentes.Modules.HistoriaUsuario;
+using Automatizacion.Agentes.Modules.HistoriaUsuario.Documents;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 

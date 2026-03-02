@@ -1,4 +1,4 @@
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Models;
+using Automatizacion.Agentes.Modules.HistoriaUsuario.Models;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
@@ -11,7 +11,7 @@ using A = DocumentFormat.OpenXml.Drawing;
 using DW = DocumentFormat.OpenXml.Drawing.Wordprocessing;
 using PIC = DocumentFormat.OpenXml.Drawing.Pictures;
 
-namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
+namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Documents
 {
     public class HistoriaUsuarioWordService
     {
@@ -22,7 +22,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
             _logger = logger;
         }
 
-        public void GenerateDocument(List<RequerimientoKoncilia> requerimientos, string rutaArchivo, Dictionary<int, string>? imagenesDiagramas = null)
+        public void GenerateDocument(List<Requerimiento> requerimientos, string rutaArchivo, Dictionary<int, string>? imagenesDiagramas = null)
         {
             _logger.LogInformation("Generando documento Word en: {rutaArchivo}", rutaArchivo);
 
@@ -208,7 +208,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
             }
         }
 
-        private void AgregarTablaInfo(Body body, RequerimientoKoncilia req)
+        private void AgregarTablaInfo(Body body, Requerimiento req)
         {
             var table = body.AppendChild(new Table());
 
@@ -273,7 +273,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
 
             // Cargar la imagen desde el recurso embebido
             var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "Koncilia.HistoriaUsuario.Api.Assets.koncilia_header.png";
+            string resourceName = "HistoriaUsuario.Api.Assets.koncilia_header.png";
             using (Stream? resourceStream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
@@ -317,7 +317,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
                         new DW.DocProperties()
                         {
                             Id = (UInt32Value)100U,
-                            Name = "Header Koncilia"
+                            Name = "Header HistoriaUsuario"
                         },
                         new DW.NonVisualGraphicFrameDrawingProperties(
                             new A.GraphicFrameLocks() { NoChangeAspect = true }),
@@ -385,7 +385,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
 
             // Cargar la imagen desde el recurso embebido
             var assembly = Assembly.GetExecutingAssembly();
-            string resourceName = "Koncilia.HistoriaUsuario.Api.Assets.koncilia_footer.png";
+            string resourceName = "HistoriaUsuario.Api.Assets.koncilia_footer.png";
             using (Stream? resourceStream = assembly.GetManifestResourceStream(resourceName))
             {
                 if (resourceStream == null)
@@ -428,7 +428,7 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents
                         new DW.DocProperties()
                         {
                             Id = (UInt32Value)200U,
-                            Name = "Footer Koncilia"
+                            Name = "Footer HistoriaUsuario"
                         },
                         new DW.NonVisualGraphicFrameDrawingProperties(
                             new A.GraphicFrameLocks() { NoChangeAspect = true }),

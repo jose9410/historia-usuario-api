@@ -29,4 +29,4 @@ RUN mkdir -p /app/Inputs /app/Outputs && chmod -R 777 /app/Inputs /app/Outputs
 # Exponer el puerto
 EXPOSE 8080
 
-ENTRYPOINT ["dotnet", "Koncilia.HistoriaUsuario.Api.dll"]
+ENTRYPOINT ["dotnet", "HistoriaUsuario.Api.dll"]

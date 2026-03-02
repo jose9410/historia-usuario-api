@@ -1,4 +1,4 @@
-using Automatizacion.AgentesKoncilia.Core.Interfaces;
+using Automatizacion.Agentes.Core.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
@@ -7,7 +7,7 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace Automatizacion.AgentesKoncilia.Infrastructure.AI
+namespace Automatizacion.Agentes.Infrastructure.AI
 {
     /// <summary>
     /// Servicio genérico de IA basado en Semantic Kernel.

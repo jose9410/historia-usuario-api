@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Models
+namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Models
 {
-    public class RequerimientoKoncilia
+    public class Requerimiento
     {
         [JsonPropertyName("Nombre_del_Proceso")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
@@ -52,6 +52,6 @@ namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Models
     public class RespuestaHistoriaUsuario
     {
         [JsonPropertyName("proyectos")]
-        public List<RequerimientoKoncilia> Proyectos { get; set; } = new();
+        public List<Requerimiento> Proyectos { get; set; } = new();
     }
 }

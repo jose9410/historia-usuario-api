@@ -1,13 +1,13 @@
-using Automatizacion.AgentesKoncilia.Core.Interfaces;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Documents;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Models;
-using Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario.Prompts;
+using Automatizacion.Agentes.Core.Interfaces;
+using Automatizacion.Agentes.Modules.HistoriaUsuario.Documents;
+using Automatizacion.Agentes.Modules.HistoriaUsuario.Models;
+using Automatizacion.Agentes.Modules.HistoriaUsuario.Prompts;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 
-namespace Automatizacion.AgentesKoncilia.Modules.HistoriaUsuario
+namespace Automatizacion.Agentes.Modules.HistoriaUsuario
 {
     /// <summary>
     /// Agente orquestador para el módulo de Historia de Usuario.

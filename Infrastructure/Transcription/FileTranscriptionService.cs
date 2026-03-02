@@ -1,4 +1,4 @@
-using Automatizacion.AgentesKoncilia.Core.Interfaces;
+using Automatizacion.Agentes.Core.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System;
@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace Automatizacion.AgentesKoncilia.Infrastructure.Transcription
+namespace Automatizacion.Agentes.Infrastructure.Transcription
 {
     public class FileTranscriptionService : ITranscriptionService
     {

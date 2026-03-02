@@ -3,7 +3,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Collections.Generic;
 
-namespace Automatizacion.AgentesKoncilia.Core.Converters
+namespace Automatizacion.Agentes.Core.Converters
 {
     /// <summary>
     /// Converter que maneja tanto strings como arrays de strings.
