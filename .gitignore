@@ -1,6 +1,5 @@
 # Secretos y Configuración
 appsettings.json
-Modules/HistoriaUsuario/Prompts/HistoriaUsuarioPrompt.cs
 
 # Archivos de compilación
 bin/
