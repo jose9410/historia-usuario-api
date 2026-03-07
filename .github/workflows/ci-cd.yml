@@ -55,7 +55,9 @@ jobs:
           ref: main
 
       - name: Actualizar tag en values.yaml
-        run: sed -i 's/tag: ".*"/tag: "${{ steps.version.outputs.VERSION }}"/' ${{ env.VALUES_FILE }}
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          sed -i "s/tag: \".*\"/tag: \"${VERSION}\"/" ${{ env.VALUES_FILE }}
 
       - name: Commit y Push
         run: |
