@@ -17,24 +17,37 @@ public class HistoriaUsuarioController : ControllerBase
     [HttpPost("upload-vtt")]
     public async Task<IActionResult> UploadVtt(IFormFile file)
     {
-        if (file == null || file.Length == 0)
-            return BadRequest("No se ha seleccionado ningún archivo.");
-
-        string inputDir = Path.Combine(Directory.GetCurrentDirectory(), "Inputs");
-        
-        if (!Directory.Exists(inputDir))
-            Directory.CreateDirectory(inputDir);
-
-        string filePath = Path.Combine(inputDir, "transcripcion.vtt");
-        
-        using (var stream = new FileStream(filePath, FileMode.Create))
+        try
         {
-            await file.CopyToAsync(stream);
+            if (file == null || file.Length == 0)
+                return BadRequest("No se ha seleccionado ningún archivo.");
+
+            string inputDir = Path.Combine(Directory.GetCurrentDirectory(), "Inputs");
+            
+            if (!Directory.Exists(inputDir))
+                Directory.CreateDirectory(inputDir);
+
+            string filePath = Path.Combine(inputDir, "transcripcion.vtt");
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            // Ejecutar el agente
+            await _agent.RunAsync();
+
+            return Ok(new { message = "Archivo VTT recibido y procesado correctamente." });
         }
-
-        await _agent.RunAsync();
-
-        return Ok(new { message = "Archivo VTT recibido y procesado correctamente." });
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { 
+                error = "Error al procesar el archivo VTT", 
+                detail = ex.Message,
+                inner = ex.InnerException?.Message,
+                stack = ex.StackTrace 
+            });
+        }
     }
 
     [HttpPost("generate")]
