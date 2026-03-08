@@ -6,38 +6,36 @@ using Automatizacion.Agentes.Modules.HistoriaUsuario;
 public class HistoriaUsuarioController : ControllerBase
 {
     private readonly HistoriaUsuarioAgent _agent;
+    private readonly IConfiguration _configuration;
 
-    public HistoriaUsuarioController(HistoriaUsuarioAgent agent)
+    public HistoriaUsuarioController(HistoriaUsuarioAgent agent, IConfiguration configuration)
     {
         _agent = agent;
+        _configuration = configuration;
     }
 
     [HttpPost("upload-vtt")]
-public async Task<IActionResult> UploadVtt(IFormFile file)
-{
-    if (file == null || file.Length == 0)
-        return BadRequest("No se ha seleccionado ningún archivo.");
-
-    // 1. Obtener la ruta de la carpeta de Entradas (puedes hardcodearla por ahora para probar)
-    string inputDir = Path.Combine(Directory.GetCurrentDirectory(), "Inputs");
-    
-    if (!Directory.Exists(inputDir))
-        Directory.CreateDirectory(inputDir);
-
-    // 2. Guardar el archivo con un nombre único o sobrescribir el último
-    string filePath = Path.Combine(inputDir, "transcripcion.vtt");
-    
-    using (var stream = new FileStream(filePath, FileMode.Create))
+    public async Task<IActionResult> UploadVtt(IFormFile file)
     {
-        await file.CopyToAsync(stream);
+        if (file == null || file.Length == 0)
+            return BadRequest("No se ha seleccionado ningún archivo.");
+
+        string inputDir = Path.Combine(Directory.GetCurrentDirectory(), "Inputs");
+        
+        if (!Directory.Exists(inputDir))
+            Directory.CreateDirectory(inputDir);
+
+        string filePath = Path.Combine(inputDir, "transcripcion.vtt");
+        
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        await _agent.RunAsync();
+
+        return Ok(new { message = "Archivo VTT recibido y procesado correctamente." });
     }
-
-    // 3. Ejecutar el agente para que procese el nuevo archivo
-    await _agent.RunAsync();
-
-    return Ok(new { message = "Archivo VTT recibido y procesado correctamente." });
-}
-
 
     [HttpPost("generate")]
     public async Task<IActionResult> Generate()
@@ -45,4 +43,47 @@ public async Task<IActionResult> UploadVtt(IFormFile file)
         await _agent.RunAsync();
         return Ok(new { message = "Proceso de Historia de Usuario completado con éxito." });
     }
+
+    // Lista los archivos generados en el directorio de salida
+    [HttpGet("outputs")]
+    public IActionResult ListOutputs()
+    {
+        string outputDir = _configuration["TranscriptionSettings:OutputDirectory"] ?? "Outputs";
+        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), outputDir);
+
+        if (!Directory.Exists(fullPath))
+            return Ok(Array.Empty<object>());
+
+        var files = Directory.GetFiles(fullPath)
+            .Select(f => new FileInfo(f))
+            .OrderByDescending(f => f.CreationTime)
+            .Select(f => new
+            {
+                name = f.Name,
+                size = f.Length,
+                date = f.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")
+            });
+
+        return Ok(files);
+    }
+
+    // Descarga un archivo específico del directorio de salida
+    [HttpGet("outputs/{fileName}")]
+    public IActionResult DownloadOutput(string fileName)
+    {
+        string outputDir = _configuration["TranscriptionSettings:OutputDirectory"] ?? "Outputs";
+        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), outputDir, fileName);
+
+        if (!System.IO.File.Exists(fullPath))
+            return NotFound("Archivo no encontrado.");
+
+        string contentType = fileName.EndsWith(".docx")
+            ? "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            : fileName.EndsWith(".png")
+            ? "image/png"
+            : "application/octet-stream";
+
+        return PhysicalFile(fullPath, contentType, fileName);
+    }
 }
+
