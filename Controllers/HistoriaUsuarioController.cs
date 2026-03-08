@@ -48,23 +48,33 @@ public class HistoriaUsuarioController : ControllerBase
     [HttpGet("outputs")]
     public IActionResult ListOutputs()
     {
-        string outputDir = _configuration["TranscriptionSettings:OutputDirectory"] ?? "Outputs";
-        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), outputDir);
+        try
+        {
+            string outputDir = _configuration["TranscriptionSettings:OutputDirectory"] ?? "Outputs";
+            string fullPath = Path.IsPathRooted(outputDir)
+                ? outputDir
+                : Path.Combine(Directory.GetCurrentDirectory(), outputDir);
 
-        if (!Directory.Exists(fullPath))
-            return Ok(Array.Empty<object>());
+            if (!Directory.Exists(fullPath))
+                return Ok(Array.Empty<object>());
 
-        var files = Directory.GetFiles(fullPath)
-            .Select(f => new FileInfo(f))
-            .OrderByDescending(f => f.CreationTime)
-            .Select(f => new
-            {
-                name = f.Name,
-                size = f.Length,
-                date = f.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")
-            });
+            var files = Directory.GetFiles(fullPath)
+                .Select(f => new FileInfo(f))
+                .OrderByDescending(f => f.CreationTime)
+                .Select(f => new
+                {
+                    name = f.Name,
+                    size = f.Length,
+                    date = f.CreationTime.ToString("yyyy-MM-dd HH:mm:ss")
+                })
+                .ToList();
 
-        return Ok(files);
+            return Ok(files);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { error = ex.Message, stack = ex.StackTrace });
+        }
     }
 
     // Descarga un archivo específico del directorio de salida
