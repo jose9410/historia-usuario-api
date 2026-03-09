@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading.Tasks;
+using Automatizacion.Agentes.Infrastructure.Diagrams;
 using Automatizacion.Agentes.Modules.HistoriaUsuario.Documents;
 using Automatizacion.Agentes.Modules.HistoriaUsuario.Models;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -11,22 +13,20 @@ using Xunit.Abstractions;
 namespace HistoriaUsuario.Tests
 {
     /// <summary>
-    /// Genera un archivo Word de vista previa con datos de muestra y lo abre automáticamente
-    /// en el programa predeterminado (Word / LibreOffice) para revisión visual del formato.
+    /// Genera un archivo Word de vista previa con datos de muestra (incluyendo diagrama PlantUML)
+    /// y lo abre automáticamente en Word para revisión visual del formato.
     ///
-    /// Uso: ejecutar este test individualmente desde el explorador de tests del IDE
-    ///       o con: dotnet test --filter "FullyQualifiedName~GenerarDocumentoPreviewTests"
+    /// Uso:
+    ///   dotnet test --filter "FullyQualifiedName~GenerarDocumentoPreviewTests"
     ///
-    /// El archivo se guarda en: backend/HistoriaUsuario.Tests/Output/koncilia_preview.docx
+    /// El archivo se guarda en: HistoriaUsuario.Api/Tests/Output/koncilia_preview.docx
     /// </summary>
     public class GenerarDocumentoPreviewTests
     {
         private readonly ITestOutputHelper _output;
 
-        // Carpeta de salida fija junto al proyecto de tests
         private static readonly string CarpetaSalida = Path.Combine(
-            AppContext.BaseDirectory,
-            "..", "..", "..", "Output");
+            AppContext.BaseDirectory, "..", "..", "..", "Output");
 
         private static readonly string RutaArchivo = Path.Combine(CarpetaSalida, "koncilia_preview.docx");
 
@@ -35,10 +35,10 @@ namespace HistoriaUsuario.Tests
             _output = output;
         }
 
-        [Fact(DisplayName = "PREVIEW - Genera el .docx de muestra y lo abre en Word")]
-        public void GenerarYAbrirDocumentoPreview()
+        [Fact(DisplayName = "PREVIEW - Genera el .docx con diagrama PlantUML y lo abre en Word")]
+        public async Task GenerarYAbrirDocumentoPreview()
         {
-            // ---- Datos de muestra realistas ----
+            // ---- Datos de muestra ----
             var requerimientos = new List<Requerimiento>
             {
                 new Requerimiento
@@ -46,51 +46,98 @@ namespace HistoriaUsuario.Tests
                     NombreProceso    = "Conciliación Bancaria Automática",
                     Asistentes       = "Juan Pérez (CFO), María García (Líder Técnico), Carlos Ruiz (BA)",
                     Objetivo         = "Permitir al usuario cargar extractos bancarios en formato CSV/XLSX y compararlos automáticamente contra el libro mayor del ERP, identificando diferencias y generando un reporte de conciliación en menos de 30 segundos para archivos de hasta 50.000 filas.",
-                    Justificacion    = "Actualmente el proceso de conciliación es 100% manual, requiere 3 días de trabajo mensual y genera errores en aproximadamente el 15% de los registros. La automatización eliminará esos errores y reducirá el tiempo de cierre contable de 5 días a 1 día.",
-                    Alcance          = "1. Módulo de carga de archivos (CSV, XLSX, OFX).\n2. Motor de conciliación con reglas configurables por cuenta.\n3. Dashboard de diferencias con clasificación automática por tipo (timing, error, duplicado).\n4. Exportación del reporte en PDF y Excel.\n5. Historial de conciliaciones por período.",
-                    Dependencias     = "- API REST del ERP SAP (módulo FI) para obtener el libro mayor.\n- Servicio de almacenamiento S3 para persistir los archivos cargados.\n- Active Directory para autenticación de usuarios.",
-                    CriteriosBrutos  = "1. El sistema debe procesar archivos de hasta 50.000 filas en menos de 30 segundos.\n2. Las diferencias deben clasificarse automáticamente (timing, error de captura, duplicado).\n3. Solo usuarios con rol 'Contador' o superior pueden ejecutar la conciliación.\n4. Cada ejecución debe quedar auditada con usuario, fecha y resultado.\n5. El sistema debe manejar diferencias de centavos con tolerancia configurable.",
-                    ResumenEjecutivo = "Se construirá un módulo de conciliación automática integrado con SAP FI que reducirá el tiempo de cierre mensual de 5 días a 1 día y eliminará los errores manuales actuales. El módulo permitirá a los contadores cargar extractos bancarios y obtener en tiempo real un reporte detallado de diferencias clasificadas por tipo, con capacidad de drill-down hasta el registro individual.",
-                    FlujoFuncional   = "1. Contador carga archivo bancario (CSV/XLSX/OFX).\n2. Sistema valida formato y estructura del archivo.\n3. Sistema consulta libro mayor SAP vía API para el período correspondiente.\n4. Motor de conciliación compara movimientos por monto, fecha y referencia.\n5. Sistema clasifica diferencias automáticamente.\n6. Sistema genera reporte de conciliación.\n7. Contador revisa y aprueba/rechaza diferencias.\n8. Sistema registra resultado en historial.",
-                    PlantUml         = ""
+                    Justificacion    = "Actualmente el proceso de conciliación es 100% manual, requiere 3 días de trabajo mensual y genera errores en aproximadamente el 15% de los registros.",
+                    Alcance          = "1. Módulo de carga de archivos (CSV, XLSX, OFX).\n2. Motor de conciliación con reglas configurables por cuenta.\n3. Dashboard de diferencias.\n4. Exportación del reporte en PDF y Excel.",
+                    Dependencias     = "- API REST del ERP SAP (módulo FI).\n- Almacenamiento S3.\n- Active Directory.",
+                    CriteriosBrutos  = "1. Procesar hasta 50.000 filas en menos de 30 segundos.\n2. Clasificar diferencias automáticamente.\n3. Solo rol 'Contador' puede ejecutar conciliación.",
+                    ResumenEjecutivo = "Módulo de conciliación automática integrado con SAP FI que reducirá el cierre mensual de 5 días a 1 día.",
+                    FlujoFuncional   = "1. Contador carga archivo.\n2. Sistema valida formato.\n3. Sistema consulta libro mayor SAP.\n4. Motor concilia.\n5. Genera reporte.",
+                    PlantUml         = @"@startuml
+!pragma layout smetana
+skinparam backgroundColor #FAFAFA
+skinparam componentStyle rectangle
+
+actor Contador
+package ""Módulo Koncilia"" {
+    component ""Frontend Web"" as web
+    component ""API Backend"" as api
+    database ""PostgreSQL"" as db
+}
+cloud ""SAP FI"" as sap
+
+Contador --> web : Carga extracto
+web --> api : REST/JSON
+api --> sap : Consulta libro mayor
+api --> db : Guarda resultado
+@enduml"
                 },
                 new Requerimiento
                 {
                     NombreProceso    = "Gestión de Maestro de Proveedores",
                     Asistentes       = "Ana Martínez (Compras), Luis Fernández (IT), Sandra Torres (Gerente)",
-                    Objetivo         = "Centralizar el maestro de proveedores con un flujo de aprobación de doble nivel, garantizando que todos los proveedores activos cumplan con los requisitos legales y comerciales de la empresa antes de poder emitirles órdenes de compra.",
-                    Justificacion    = "Los proveedores están dispersos en 7 hojas de cálculo distintas mantenidas por diferentes departamentos, lo que genera inconsistencias, proveedores duplicados y pagos a proveedores no validados. Se han detectado 3 incidentes de fraude en los últimos 2 años relacionados con proveedores fantasma.",
-                    Alcance          = "1. CRUD completo de proveedores con campos obligatorios validados (RUC, razón social, IBAN, contacto).\n2. Flujo de aprobación: Compras crea → Jefe Compras aprueba nivel 1 → Gerente Finanzas aprueba nivel 2.\n3. Validación automática de RUC contra API de SUNAT.\n4. Módulo de documentos adjuntos (RUC, contrato, certificados).\n5. Auditoría completa de cambios.",
-                    Dependencias     = "- API de SUNAT para validación de RUC.\n- Active Directory (LDAP) para roles y aprobadores.\n- Sistema de correo SMTP para notificaciones de workflow.",
-                    CriteriosBrutos  = "1. Solo usuarios con rol 'Compras' pueden crear/editar proveedores.\n2. Un proveedor no puede recibir OC hasta ser aprobado en ambos niveles.\n3. Cada cambio debe registrar usuario, fecha y campo modificado.\n4. El RUC debe validarse contra SUNAT en tiempo real al ingresarlo.\n5. Los aprobadores deben recibir notificación por email al llegar solicitudes pendientes.\n6. El sistema debe bloquear automáticamente proveedores con más de 12 meses sin transacciones.",
-                    ResumenEjecutivo = "Se implementará un módulo centralizado de gestión de proveedores que reemplazará las 7 hojas de cálculo actuales, incorporando validación automática de identidad fiscal vía SUNAT y un flujo de aprobación de doble nivel para garantizar que solo proveedores verificados puedan recibir órdenes de compra.",
-                    FlujoFuncional   = "1. Compras ingresa datos del proveedor (RUC se valida en tiempo real contra SUNAT).\n2. Sistema notifica a Jefe de Compras para aprobación nivel 1.\n3. Jefe de Compras revisa y aprueba o rechaza con comentarios.\n4. Si aprobado: Sistema notifica a Gerente de Finanzas para aprobación nivel 2.\n5. Gerente aprueba o rechaza con comentarios.\n6. Si aprobado en ambos niveles: Proveedor queda activo en el sistema.\n7. Sistema notifica al creador el resultado del proceso.",
-                    PlantUml         = ""
+                    Objetivo         = "Centralizar el maestro de proveedores con un flujo de aprobación de doble nivel.",
+                    Justificacion    = "Los proveedores están dispersos en 7 hojas de cálculo. Se han detectado 3 incidentes de fraude en 2 años.",
+                    Alcance          = "1. CRUD de proveedores.\n2. Flujo aprobación 2 niveles.\n3. Validación RUC vs SUNAT.\n4. Auditoría completa.",
+                    Dependencias     = "- API SUNAT.\n- Active Directory (LDAP).\n- SMTP.",
+                    CriteriosBrutos  = "1. Solo rol 'Compras' crea proveedores.\n2. No puede emitir OC sin aprobación.\n3. Todos los cambios quedan auditados.",
+                    ResumenEjecutivo = "Módulo centralizado de proveedores que reemplaza 7 hojas de cálculo, con validación SUNAT y aprobación de doble nivel.",
+                    FlujoFuncional   = "1. Compras crea proveedor.\n2. Jefe aprueba nivel 1.\n3. Gerente aprueba nivel 2.\n4. Proveedor queda activo.",
+                    PlantUml         = "" // Sin diagrama en este requerimiento
                 }
             };
 
-            // ---- Generar el documento ----
+            // ---- Preparar carpeta de salida ----
             Directory.CreateDirectory(CarpetaSalida);
 
-            var service = new HistoriaUsuarioWordService(NullLogger<HistoriaUsuarioWordService>.Instance);
-            service.GenerateDocument(requerimientos, RutaArchivo);
+            // ---- Renderizar diagramas PlantUML (igual que el agente real) ----
+            var plantUmlService = new PlantUmlService(NullLogger<PlantUmlService>.Instance);
+            var imagenesDiagramas = new Dictionary<int, string>();
 
+            for (int i = 0; i < requerimientos.Count; i++)
+            {
+                var req = requerimientos[i];
+                if (!string.IsNullOrWhiteSpace(req.PlantUml))
+                {
+                    string outputId = $"diagrama_{i}_preview";
+                    string? pathImagen = await plantUmlService.RenderToImageAsync(
+                        req.PlantUml, outputId, Path.GetFullPath(CarpetaSalida));
+
+                    if (pathImagen != null)
+                    {
+                        imagenesDiagramas[i] = pathImagen;
+                        _output.WriteLine($"🖼️  Diagrama {i} renderizado en: {pathImagen}");
+                    }
+                    else
+                    {
+                        _output.WriteLine($"⚠️  No se pudo renderizar el diagrama {i}.");
+                        _output.WriteLine($"    Verificá que Java esté instalado y que plantuml.jar esté en Tools/");
+                    }
+                }
+            }
+
+            // Pequeña espera para asegurar que Java liberó los archivos SVG
+            await Task.Delay(500);
+
+            // ---- Generar el documento Word ----
+            var wordService = new HistoriaUsuarioWordService(NullLogger<HistoriaUsuarioWordService>.Instance);
+            wordService.GenerateDocument(requerimientos, RutaArchivo,
+                imagenesDiagramas.Count > 0 ? imagenesDiagramas : null);
+
+            string rutaAbsoluta = Path.GetFullPath(RutaArchivo);
             _output.WriteLine($"✅ Documento generado en:");
-            _output.WriteLine($"   {RutaArchivo}");
+            _output.WriteLine($"   {rutaAbsoluta}");
 
-            Assert.True(File.Exists(RutaArchivo),
-                $"No se encontró el archivo generado en: {RutaArchivo}");
+            Assert.True(File.Exists(rutaAbsoluta), $"No se encontró el archivo generado en: {rutaAbsoluta}");
 
-            // ---- Abrir en Word / programa predeterminado ----
+            // ---- Abrir en Word ----
             try
             {
-                Process.Start(new ProcessStartInfo(RutaArchivo) { UseShellExecute = true });
-                _output.WriteLine("📄 Archivo abierto en el programa predeterminado.");
+                Process.Start(new ProcessStartInfo(rutaAbsoluta) { UseShellExecute = true });
+                _output.WriteLine("📄 Archivo abierto en Word.");
             }
             catch (Exception ex)
             {
                 _output.WriteLine($"⚠️  No se pudo abrir automáticamente: {ex.Message}");
-                _output.WriteLine("    Abrilo manualmente en la ruta indicada arriba.");
             }
         }
     }

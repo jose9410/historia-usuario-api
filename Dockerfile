@@ -14,8 +14,10 @@ RUN dotnet publish -c Release -o out
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
 
-# --- NUEVA SECCIÓN: Instalar Java para PlantUML ---
-RUN apt-get update && apt-get install -y openjdk-17-jre-headless && rm -rf /var/lib/apt/lists/*
+# --- NUEVA SECCIÓN: Instalar Java y Graphviz para PlantUML ---
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends openjdk-17-jre-headless graphviz \
+    && rm -rf /var/lib/apt/lists/*
 
 # Copia los binarios compilados
 COPY --from=build /app/out .

@@ -21,6 +21,13 @@
     <EmbeddedResource Include="Assets\koncilia_footer.png" />
   </ItemGroup>
 
+  <!-- Copiar plantuml.jar al directorio de salida para que funcione localmente -->
+  <ItemGroup>
+    <None Include="Tools\plantuml.jar">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <ItemGroup>
     <Compile Remove="Tests\**" />
     <Content Remove="Tests\**" />

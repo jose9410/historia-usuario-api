@@ -8,5 +8,5 @@ obj/
 .vscode/
 *.user
 
-# Archivos generados por los tests (previews Word)
-**/Output/*.docx
+# Archivos generados por los tests (previews Word y diagramas PlantUML)
+**/Tests/Output/
