@@ -63,7 +63,7 @@ namespace Automatizacion.Agentes.Modules.HistoriaUsuario
                     {
                         var req = respuesta.Proyectos[i];
                         Console.WriteLine($"\n📋 Proceso: {req.NombreProceso}");
-                        Console.WriteLine($"   Objetivo: {req.Objetivo}");
+                        Console.WriteLine($"   ¿Qué se quiere hacer?: {req.QueSeQuiereHacer}");
 
                         if (!string.IsNullOrWhiteSpace(req.PlantUml) && req.PlantUml != "Informacion no discutida en el proceso")
                         {

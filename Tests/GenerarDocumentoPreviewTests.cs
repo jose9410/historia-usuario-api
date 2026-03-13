@@ -43,16 +43,14 @@ namespace HistoriaUsuario.Tests
             {
                 new Requerimiento
                 {
-                    NombreProceso    = "Conciliación Bancaria Automática",
-                    Asistentes       = "Juan Pérez (CFO), María García (Líder Técnico), Carlos Ruiz (BA)",
-                    Objetivo         = "Permitir al usuario cargar extractos bancarios en formato CSV/XLSX y compararlos automáticamente contra el libro mayor del ERP, identificando diferencias y generando un reporte de conciliación en menos de 30 segundos para archivos de hasta 50.000 filas.",
-                    Justificacion    = "Actualmente el proceso de conciliación es 100% manual, requiere 3 días de trabajo mensual y genera errores en aproximadamente el 15% de los registros.",
-                    Alcance          = "1. Módulo de carga de archivos (CSV, XLSX, OFX).\n2. Motor de conciliación con reglas configurables por cuenta.\n3. Dashboard de diferencias.\n4. Exportación del reporte en PDF y Excel.",
-                    Dependencias     = "- API REST del ERP SAP (módulo FI).\n- Almacenamiento S3.\n- Active Directory.",
-                    CriteriosBrutos  = "1. Procesar hasta 50.000 filas en menos de 30 segundos.\n2. Clasificar diferencias automáticamente.\n3. Solo rol 'Contador' puede ejecutar conciliación.",
-                    ResumenEjecutivo = "Módulo de conciliación automática integrado con SAP FI que reducirá el cierre mensual de 5 días a 1 día.",
-                    FlujoFuncional   = "1. Contador carga archivo.\n2. Sistema valida formato.\n3. Sistema consulta libro mayor SAP.\n4. Motor concilia.\n5. Genera reporte.",
-                    PlantUml         = @"@startuml
+                    NombreProceso          = "Conciliación Bancaria Automática",
+                    Asistentes             = "Juan Pérez (CFO), María García (Líder Técnico), Carlos Ruiz (BA)",
+                    QueSeQuiereHacer       = "Permitir al usuario cargar extractos bancarios en formato CSV/XLSX y compararlos automáticamente contra el libro mayor del ERP, identificando diferencias y generando un reporte de conciliación en menos de 30 segundos para archivos de hasta 50.000 filas.",
+                    ParaQueSirve           = "Actualmente el proceso de conciliación es 100% manual, requiere 3 días de trabajo mensual y genera errores en aproximadamente el 15% de los registros.",
+                    ComoDeberiaFuncionar   = "1. Contador carga archivo.\n2. Sistema valida formato.\n3. Sistema consulta libro mayor SAP.\n4. Motor concilia.\n5. Genera reporte.",
+                    QueSeNecesita          = "- API REST del ERP SAP (módulo FI).\n- Almacenamiento S3.\n- Active Directory.\n- Archivos CSV, XLSX, OFX.",
+                    CriteriosAceptacion    = "1. Procesar hasta 50.000 filas en menos de 30 segundos.\n2. Clasificar diferencias automáticamente.\n3. Solo rol 'Contador' puede ejecutar conciliación.",
+                    PlantUml               = @"@startuml
 !pragma layout smetana
 skinparam backgroundColor #FAFAFA
 skinparam componentStyle rectangle
@@ -73,16 +71,14 @@ api --> db : Guarda resultado
                 },
                 new Requerimiento
                 {
-                    NombreProceso    = "Gestión de Maestro de Proveedores",
-                    Asistentes       = "Ana Martínez (Compras), Luis Fernández (IT), Sandra Torres (Gerente)",
-                    Objetivo         = "Centralizar el maestro de proveedores con un flujo de aprobación de doble nivel.",
-                    Justificacion    = "Los proveedores están dispersos en 7 hojas de cálculo. Se han detectado 3 incidentes de fraude en 2 años.",
-                    Alcance          = "1. CRUD de proveedores.\n2. Flujo aprobación 2 niveles.\n3. Validación RUC vs SUNAT.\n4. Auditoría completa.",
-                    Dependencias     = "- API SUNAT.\n- Active Directory (LDAP).\n- SMTP.",
-                    CriteriosBrutos  = "1. Solo rol 'Compras' crea proveedores.\n2. No puede emitir OC sin aprobación.\n3. Todos los cambios quedan auditados.",
-                    ResumenEjecutivo = "Módulo centralizado de proveedores que reemplaza 7 hojas de cálculo, con validación SUNAT y aprobación de doble nivel.",
-                    FlujoFuncional   = "1. Compras crea proveedor.\n2. Jefe aprueba nivel 1.\n3. Gerente aprueba nivel 2.\n4. Proveedor queda activo.",
-                    PlantUml         = "" // Sin diagrama en este requerimiento
+                    NombreProceso          = "Gestión de Maestro de Proveedores",
+                    Asistentes             = "Ana Martínez (Compras), Luis Fernández (IT), Sandra Torres (Gerente)",
+                    QueSeQuiereHacer       = "Centralizar el maestro de proveedores con un flujo de aprobación de doble nivel.",
+                    ParaQueSirve           = "Los proveedores están dispersos en 7 hojas de cálculo. Se han detectado 3 incidentes de fraude en 2 años.",
+                    ComoDeberiaFuncionar   = "1. Compras crea proveedor.\n2. Jefe aprueba nivel 1.\n3. Gerente aprueba nivel 2.\n4. Proveedor queda activo.",
+                    QueSeNecesita          = "- API SUNAT.\n- Active Directory (LDAP).\n- SMTP.",
+                    CriteriosAceptacion    = "1. Solo rol 'Compras' crea proveedores.\n2. No puede emitir OC sin aprobación.\n3. Todos los cambios quedan auditados.",
+                    PlantUml               = "" // Sin diagrama en este requerimiento
                 }
             };
 

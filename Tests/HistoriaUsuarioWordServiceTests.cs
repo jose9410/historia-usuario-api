@@ -29,29 +29,25 @@ namespace HistoriaUsuario.Tests
             {
                 new Requerimiento
                 {
-                    NombreProceso    = "Proceso de Conciliación Bancaria",
-                    Asistentes       = "Juan Pérez, María García",
-                    Objetivo         = "Permitir al usuario cargar extractos bancarios y compararlos automáticamente contra el libro mayor.",
-                    Justificacion    = "Actualmente el proceso es manual y genera errores en las conciliaciones mensuales.",
-                    Alcance          = "Módulo de carga de archivos CSV/XLSX, motor de conciliación y reporte de diferencias.",
-                    Dependencias     = "API de ERP SAP, servicio de almacenamiento S3.",
-                    CriteriosBrutos  = "1. El sistema debe procesar archivos de hasta 50.000 filas en menos de 30 segundos.\n2. Las diferencias deben clasificarse automáticamente por tipo.",
-                    ResumenEjecutivo = "Se construirá un módulo de conciliación automática que reducirá el tiempo de cierre mensual en un 70%.",
-                    FlujoFuncional   = "Usuario carga archivo → Sistema valida formato → Motor concilia → Genera reporte diferencias.",
-                    PlantUml         = ""
+                    NombreProceso          = "Proceso de Conciliación Bancaria",
+                    Asistentes             = "Juan Pérez, María García",
+                    QueSeQuiereHacer       = "Permitir al usuario cargar extractos bancarios y compararlos automáticamente contra el libro mayor.",
+                    ParaQueSirve           = "Actualmente el proceso es manual y genera errores en las conciliaciones mensuales.",
+                    ComoDeberiaFuncionar   = "Usuario carga archivo → Sistema valida formato → Motor concilia → Genera reporte de diferencias.",
+                    QueSeNecesita          = "Archivos CSV/XLSX, API de ERP SAP, servicio de almacenamiento S3.",
+                    CriteriosAceptacion    = "1. El sistema debe procesar archivos de hasta 50.000 filas en menos de 30 segundos.\n2. Las diferencias deben clasificarse automáticamente por tipo.",
+                    PlantUml               = ""
                 },
                 new Requerimiento
                 {
-                    NombreProceso    = "Gestión de Proveedores",
-                    Asistentes       = "Carlos López",
-                    Objetivo         = "Centralizar el maestro de proveedores con aprobación por niveles.",
-                    Justificacion    = "Los proveedores están dispersos en múltiples hojas de cálculo.",
-                    Alcance          = "CRUD de proveedores, flujo de aprobación de 2 niveles.",
-                    Dependencias     = "Directorio Activo (LDAP) para roles.",
-                    CriteriosBrutos  = "1. Solo usuarios con rol 'Compras' pueden crear proveedores.\n2. Los cambios deben quedar auditados.",
-                    ResumenEjecutivo = "Módulo de maestro de proveedores con doble aprobación y auditoría completa.",
-                    FlujoFuncional   = "Compras crea proveedor → Jefe aprueba nivel 1 → Gerente aprueba nivel 2 → Activo en sistema.",
-                    PlantUml         = ""
+                    NombreProceso          = "Gestión de Proveedores",
+                    Asistentes             = "Carlos López",
+                    QueSeQuiereHacer       = "Centralizar el maestro de proveedores con aprobación por niveles.",
+                    ParaQueSirve           = "Los proveedores están dispersos en múltiples hojas de cálculo.",
+                    ComoDeberiaFuncionar   = "Compras crea proveedor → Jefe aprueba nivel 1 → Gerente aprueba nivel 2 → Activo en sistema.",
+                    QueSeNecesita          = "Directorio Activo (LDAP) para roles.",
+                    CriteriosAceptacion    = "1. Solo usuarios con rol 'Compras' pueden crear proveedores.\n2. Los cambios deben quedar auditados.",
+                    PlantUml               = ""
                 }
             };
 
@@ -142,8 +138,8 @@ namespace HistoriaUsuario.Tests
         [Fact(DisplayName = "T06 - Número mínimo de tablas generadas")]
         public void T06_CantidadMinimaTablas()
         {
-            // 1 tabla de portada + 7 secciones × 2 requerimientos = 15
-            int expectedMin = 1 + (7 * _requerimientos.Count);
+            // 1 tabla de portada + 5 secciones × N requerimientos
+            int expectedMin = 1 + (5 * _requerimientos.Count);
 
             using var doc = WordprocessingDocument.Open(_rutaArchivo, false);
             var body = doc.MainDocumentPart!.Document.Body!;
@@ -208,8 +204,8 @@ namespace HistoriaUsuario.Tests
                 .Where(c => c.TableCellProperties?.Shading?.Fill?.Value == "D3D3D3")
                 .ToList();
 
-            // Debe haber al menos las filas de encabezado: 7 secciones × N reqs + 1 portada
-            int expectedMin = (7 * _requerimientos.Count) + 3; // +3 filas de portada con D3D3D3
+            // Debe haber al menos las filas de encabezado: 5 secciones × N reqs + 3 filas de portada
+            int expectedMin = (5 * _requerimientos.Count) + 3; // +3 filas de portada con D3D3D3
             Assert.True(celdasConFondoGris.Count >= expectedMin,
                 $"Se esperaban al menos {expectedMin} celdas con fondo D3D3D3 pero se encontraron {celdasConFondoGris.Count}.");
         }
@@ -279,8 +275,8 @@ namespace HistoriaUsuario.Tests
                 })
                 .ToList();
 
-            // 7 secciones × 2 requerimientos = 14 tablas con borde E2E2E2
-            int expectedMin = 7 * _requerimientos.Count;
+            // 5 secciones × N requerimientos = tablas con borde E2E2E2
+            int expectedMin = 5 * _requerimientos.Count;
             Assert.True(tablasConBordeGris.Count >= expectedMin,
                 $"Se esperaban al menos {expectedMin} tablas con bordes E2E2E2 pero se encontraron {tablasConBordeGris.Count}.");
         }
@@ -300,8 +296,8 @@ namespace HistoriaUsuario.Tests
                 .Where(r => r.RunProperties?.FontSize?.Val?.Value == "18")
                 .ToList();
 
-            // Al menos 7 secciones × 2 requerimientos = 14 runs de contenido
-            int expectedMin = 7 * _requerimientos.Count;
+            // Al menos 5 secciones × N requerimientos runs de contenido
+            int expectedMin = 5 * _requerimientos.Count;
             Assert.True(runsConFuente18.Count >= expectedMin,
                 $"Se esperaban al menos {expectedMin} runs con FontSize=18 pero se encontraron {runsConFuente18.Count}.");
         }

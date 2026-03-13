@@ -21,14 +21,12 @@ namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Prompts
 
             1.  'Nombre_del_Proceso': Nombre unificado del proyecto principal.
             2.  'Personas_Asistentes': Nombres de los participantes activos.
-            3.  'Objetivo_Especifico': El propósito único de este proceso.
-            4.  'Justificacion_de_Negocio': El valor que resuelve la implementación.
-            5.  'Alcance_Funcional_Clave': Lista de los puntos clave de la funcionalidad.
-            6.  'Dependencias_y_Fuentes': Archivos, sistemas o pre-requisitos necesarios.
-            7.  'Criterios_de_Aceptacion': Condiciones de éxito claras y medibles.
-            8.  'Resumen_Ejecutivo_del_Alcance': Párrafo profesional de 5 líneas consolidando los puntos anteriores.
-            9.  'Flujo_Funcional_Alto_Nivel': Pasos generales desde la perspectiva del usuario.
-            10. 'Diagrama_C4': Genera un código PlantUML para un Diagrama C4 de Contenedores (Nivel 1) con estas reglas:
+            3.  '¿Qué se quiere hacer?': Explica el valor o problema que se está resolviendo. 
+            4.  '¿Para qué sirve o por qué se necesita?': El valor que resuelve la implementación.
+            5.  '¿Cómo debería funcionar?': Describe cómo el usuario imagina o espera que funcione..
+            6.  '¿Qué se necesita para que funcione?': Lista los insumos: archivos, formatos, reglas de cruce, campos, etc..
+            7.  'Criterios de Aceptación': Condiciones claras que permiten validar que está completo y ¿Cómo desde el área funcional sabremos que está bien hecho?.
+            8. 'Diagrama_C4': Genera un código PlantUML para un Diagrama C4 de Contenedores (Nivel 1) con estas reglas:
                 *   Usa !include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
                 *   Representa al Usuario como Person.
                 *   Representa el Sistema Principal como System_Boundary(koncilia) y dentro coloca un Container para EL PROCESO ACTUAL.

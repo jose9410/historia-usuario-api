@@ -13,33 +13,40 @@ namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Models
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
         public string Asistentes { get; set; } = "";
 
-        [JsonPropertyName("Objetivo_Especifico")]
+        /// <summary>
+        /// ¿Qué se quiere hacer? - Explica el valor o problema que se está resolviendo.
+        /// </summary>
+        [JsonPropertyName("¿Qué se quiere hacer?")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string Objetivo { get; set; } = "";
+        public string QueSeQuiereHacer { get; set; } = "";
 
-        [JsonPropertyName("Justificacion_de_Negocio")]
+        /// <summary>
+        /// ¿Para qué sirve o por qué se necesita? - El valor que resuelve la implementación.
+        /// </summary>
+        [JsonPropertyName("¿Para qué sirve o por qué se necesita?")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string Justificacion { get; set; } = "";
+        public string ParaQueSirve { get; set; } = "";
 
-        [JsonPropertyName("Alcance_Funcional_Clave")]
+        /// <summary>
+        /// ¿Cómo debería funcionar? - Describe cómo el usuario imagina o espera que funcione.
+        /// </summary>
+        [JsonPropertyName("¿Cómo debería funcionar?")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string Alcance { get; set; } = "";
+        public string ComoDeberiaFuncionar { get; set; } = "";
 
-        [JsonPropertyName("Dependencias_y_Fuentes")]
+        /// <summary>
+        /// ¿Qué se necesita para que funcione? - Lista los insumos: archivos, formatos, reglas, campos, etc.
+        /// </summary>
+        [JsonPropertyName("¿Qué se necesita para que funcione?")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string Dependencias { get; set; } = "";
+        public string QueSeNecesita { get; set; } = "";
 
-        [JsonPropertyName("Criterios_de_Aceptacion")]
+        /// <summary>
+        /// Criterios de Aceptación - Condiciones claras que permiten validar que está completo.
+        /// </summary>
+        [JsonPropertyName("Criterios de Aceptación")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string CriteriosBrutos { get; set; } = "";
-
-        [JsonPropertyName("Resumen_Ejecutivo_del_Alcance")]
-        [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string ResumenEjecutivo { get; set; } = "";
-
-        [JsonPropertyName("Flujo_Funcional_Alto_Nivel")]
-        [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
-        public string FlujoFuncional { get; set; } = "";
+        public string CriteriosAceptacion { get; set; } = "";
 
         [JsonPropertyName("Diagrama_C4")]
         [JsonConverter(typeof(Core.Converters.StringOrArrayConverter))]
@@ -47,7 +54,7 @@ namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Models
     }
 
     /// <summary>
-    /// Wrapper para deserializar la respuesta que viene dentro de "proyectos"
+    /// Wrapper para deserializar la respuesta que viene como array directo de la IA.
     /// </summary>
     public class RespuestaHistoriaUsuario
     {

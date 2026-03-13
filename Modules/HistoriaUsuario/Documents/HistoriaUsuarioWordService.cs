@@ -55,13 +55,11 @@ namespace Automatizacion.Agentes.Modules.HistoriaUsuario.Documents
 
                         AgregarTitulo(body, $"{i + 1}. {req.NombreProceso}", 18, true, false);
 
-                        AgregarTablaContenido(body, "OBJETIVO ESPECÍFICO", req.Objetivo);
-                        AgregarTablaContenido(body, "JUSTIFICACIÓN DE NEGOCIO", req.Justificacion);
-                        AgregarTablaContenido(body, "ALCANCE FUNCIONAL CLAVE", req.Alcance);
-                        AgregarTablaContenido(body, "DEPENDENCIAS Y FUENTES", req.Dependencias);
-                        AgregarTablaContenido(body, "CRITERIOS DE ACEPTACIÓN", req.CriteriosBrutos);
-                        AgregarTablaContenido(body, "RESUMEN EJECUTIVO", req.ResumenEjecutivo);
-                        AgregarTablaContenido(body, "FLUJO FUNCIONAL ALTO NIVEL", req.FlujoFuncional);
+                        AgregarTablaContenido(body, "¿QUÉ SE QUIERE HACER?", req.QueSeQuiereHacer);
+                        AgregarTablaContenido(body, "¿PARA QUÉ SIRVE O POR QUÉ SE NECESITA?", req.ParaQueSirve);
+                        AgregarTablaContenido(body, "¿CÓMO DEBERÍA FUNCIONAR?", req.ComoDeberiaFuncionar);
+                        AgregarTablaContenido(body, "¿QUÉ SE NECESITA PARA QUE FUNCIONE?", req.QueSeNecesita);
+                        AgregarTablaContenido(body, "CRITERIOS DE ACEPTACIÓN", req.CriteriosAceptacion);
 
                         if (imagenesDiagramas != null && imagenesDiagramas.TryGetValue(i, out string? pathImagen) && File.Exists(pathImagen))
                         {
