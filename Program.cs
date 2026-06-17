@@ -59,8 +59,10 @@ builder.Services.AddTransient<HistoriaUsuarioWordService>();
 builder.Services.AddTransient<HistoriaUsuarioAgent>();
 
 var app = builder.Build();
-app.MapMetrics();
 app.UseHttpMetrics();
+
+app.MapMetrics();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
