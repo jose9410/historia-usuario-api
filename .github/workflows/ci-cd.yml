@@ -27,6 +27,25 @@ jobs:
       - name: Ejecutar pruebas unitarias
         run: dotnet test Tests/HistoriaUsuario.Tests.csproj
 
+      - name: Escaneo de Vulnerabilidades con Snyk
+        uses: snyk/actions/dotnet@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
+
+      - name: Instalar SonarScanner Global
+        run: dotnet tool install --global dotnet-sonarscanner
+
+      - name: Análisis Estático con SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        run: |
+          dotnet sonarscanner begin /k:"historia-usuario-api" /d:sonar.host.url="${SONAR_HOST_URL}" /d:sonar.token="${SONAR_TOKEN}"
+          dotnet build
+          dotnet sonarscanner end /d:sonar.token="${SONAR_TOKEN}"
+
       - name: Extraer versión del tag
         id: version
         run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
