@@ -6,6 +6,7 @@ using Automatizacion.Agentes.Modules.HistoriaUsuario;
 using Automatizacion.Agentes.Modules.HistoriaUsuario.Documents;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
+using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args); // <--- Línea corregida
 
@@ -64,7 +65,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseHttpMetrics();
+app.MapMetrics();
 app.UseAuthorization();
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok("healthy"));
