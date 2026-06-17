@@ -59,14 +59,15 @@ builder.Services.AddTransient<HistoriaUsuarioWordService>();
 builder.Services.AddTransient<HistoriaUsuarioAgent>();
 
 var app = builder.Build();
-
+app.MapMetrics();
+app.UseHttpMetrics();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-app.UseHttpMetrics();
-app.MapMetrics();
+
+
 app.UseAuthorization();
 app.MapControllers();
 app.MapGet("/health", () => Results.Ok("healthy"));
