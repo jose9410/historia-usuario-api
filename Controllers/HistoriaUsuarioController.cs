@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Automatizacion.Agentes.Modules.HistoriaUsuario;
+using Automatizacion.Agentes.Services;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -7,11 +8,19 @@ public class HistoriaUsuarioController : ControllerBase
 {
     private readonly HistoriaUsuarioAgent _agent;
     private readonly IConfiguration _configuration;
+    // Typed HttpClient — created via IHttpClientFactory so OTel HttpClient
+    // instrumentation automatically injects the W3C traceparent header on
+    // every outbound call, linking historia-api → qaautomation-api in one trace.
+    private readonly QAAutomationHealthClient _qaClient;
 
-    public HistoriaUsuarioController(HistoriaUsuarioAgent agent, IConfiguration configuration)
+    public HistoriaUsuarioController(
+        HistoriaUsuarioAgent agent,
+        IConfiguration configuration,
+        QAAutomationHealthClient qaClient)
     {
-        _agent = agent;
+        _agent         = agent;
         _configuration = configuration;
+        _qaClient      = qaClient;
     }
 
     [HttpPost("upload-vtt")]
@@ -53,8 +62,19 @@ public class HistoriaUsuarioController : ControllerBase
     [HttpPost("generate")]
     public async Task<IActionResult> Generate()
     {
+        // Step 1: Run the AI agent (Azure OpenAI call)
         await _agent.RunAsync();
-        return Ok(new { message = "Proceso de Historia de Usuario completado con éxito." });
+
+        // Step 2: Call qaautomation-api — OTel HttpClient instrumentation injects
+        // the W3C traceparent header automatically, propagating the same traceId
+        // to the downstream service so both appear in one distributed trace.
+        var qaStatus = await _qaClient.CheckHealthAsync(HttpContext.RequestAborted);
+
+        return Ok(new
+        {
+            message        = "Proceso de Historia de Usuario completado con éxito.",
+            qa_api_status  = qaStatus
+        });
     }
 
     // Lista los archivos generados en el directorio de salida
