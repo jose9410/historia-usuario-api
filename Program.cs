@@ -12,6 +12,7 @@ using Automatizacion.Agentes.Modules.HistoriaUsuario;
 using Automatizacion.Agentes.Modules.HistoriaUsuario.Documents;
 using Automatizacion.Agentes.Observability;
 using Automatizacion.Agentes.Services;
+using Automatizacion.Agentes.Services.DataService;
 using Microsoft.SemanticKernel;
 using Microsoft.SemanticKernel.ChatCompletion;
 using OpenTelemetry;
@@ -130,14 +131,37 @@ builder.Services.AddOpenTelemetry()
     });
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4.  HttpClient — typed client for cross-service call (service-a → service-b)
+// 4.  HttpClient — typed clients para llamadas entre microservicios
+//     OTel HttpClient instrumentation inyecta W3C traceparent en cada llamada
+//     saliente, enlazando historia-api → qa-api / data-service en una sola
+//     traza distribuida visible en Jaeger / X-Ray.
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── QA Automation API (service-b) ────────────────────────────────────────────
 var qaBaseUrl = cfg["Services:QAAutomationApi"] ?? "http://localhost:8081";
 builder.Services.AddHttpClient<QAAutomationHealthClient>(client =>
 {
     client.BaseAddress = new Uri(qaBaseUrl);
     client.Timeout     = TimeSpan.FromSeconds(10);
 });
+
+// ── Data Service (service-c) ─────────────────────────────────────────────────
+// BaseAddress: DATA_SERVICE_URL env var (ECS: http://data-service.local)
+//              Fallback local:           http://localhost:8082
+// Se puede sobreescribir en docker-compose con:
+//   - DATA_SERVICE_URL=http://data-service:8080
+var dataServiceUrl = cfg["DATA_SERVICE_URL"]
+    ?? cfg["Services:DataServiceUrl"]
+    ?? "http://localhost:8082";
+
+builder.Services.AddHttpClient<DataServiceClient>(client =>
+{
+    client.BaseAddress = new Uri(dataServiceUrl.TrimEnd('/') + "/");
+    // Timeout generoso: la escritura en BD puede tardar en RDS Multi-AZ
+    client.Timeout     = TimeSpan.FromSeconds(15);
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 5.  Application services (unchanged from original)
