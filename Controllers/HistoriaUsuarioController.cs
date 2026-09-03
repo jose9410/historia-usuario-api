@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Automatizacion.Agentes.Modules.HistoriaUsuario;
 using Automatizacion.Agentes.Services;
+using Automatizacion.Agentes.Services.DataService;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -12,15 +13,18 @@ public class HistoriaUsuarioController : ControllerBase
     // instrumentation automatically injects the W3C traceparent header on
     // every outbound call, linking historia-api → qaautomation-api in one trace.
     private readonly QAAutomationHealthClient _qaClient;
+    private readonly DataServiceClient? _dataClient;
 
     public HistoriaUsuarioController(
         HistoriaUsuarioAgent agent,
         IConfiguration configuration,
-        QAAutomationHealthClient qaClient)
+        QAAutomationHealthClient qaClient,
+        DataServiceClient? dataClient = null)
     {
         _agent         = agent;
         _configuration = configuration;
         _qaClient      = qaClient;
+        _dataClient    = dataClient;
     }
 
     [HttpPost("upload-vtt")]
@@ -70,10 +74,23 @@ public class HistoriaUsuarioController : ControllerBase
         // to the downstream service so both appear in one distributed trace.
         var qaStatus = await _qaClient.CheckHealthAsync(HttpContext.RequestAborted);
 
+        // Step 3: Persistir en data-service (PostgreSQL) para asegurar la traza
+        // distribuida completa hacia data-service y la base de datos RDS.
+        StoryResponse? savedStory = null;
+        if (_dataClient != null)
+        {
+            var req = new CreateStoryRequest(
+                $"HU-{DateTime.UtcNow:yyyyMMdd-HHmmss}: Conciliación Automática",
+                "Historia de usuario generada en el flujo distribuido de observabilidad.",
+                StoryStatus.Approved);
+            savedStory = await _dataClient.SaveStoryAsync(req, HttpContext.RequestAborted);
+        }
+
         return Ok(new
         {
-            message        = "Proceso de Historia de Usuario completado con éxito.",
-            qa_api_status  = qaStatus
+            message         = "Proceso de Historia de Usuario completado con éxito.",
+            qa_api_status   = qaStatus,
+            persisted_story = savedStory
         });
     }
 
